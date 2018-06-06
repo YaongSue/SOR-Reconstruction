@@ -29,3 +29,8 @@
 ##### 相机内参误差对比
 - 输入 : 将求得的f代入`verify_fixed_entities.m`的`fx`,`fy`
 - 输出 : 误差值
+### 计算生成曲线
+- 求轮廓线`computeImageMeridian\findLineContour.m`
+  - 输入 : 模型图，例如，`Data\f25_1080_720\f25_black.png`
+  - 输出 : 一条最长的左右轮廓直线（圆锥情形）
+- `find_Ws.m` 

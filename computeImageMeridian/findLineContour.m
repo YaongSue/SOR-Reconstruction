@@ -95,4 +95,4 @@ axis([0 y 0 x]);
 
 figure(2),imshow(Highlight);
 title('高亮后的图');
-imwrite(Highlight,'高亮后的图.jpg','jpg');
+%imwrite(Highlight,'高亮后的图.jpg','jpg');
