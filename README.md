@@ -8,7 +8,7 @@
   abcdef_Low =  fit_Ellipse_From_Image('../Data/f25_1080_720/f25_xia.png')
   ```
 
-### find Fixed Entities and Camera Calibration
+### Find Fixed Entities and Camera Calibration
 ##### find Fixed Entities
 - 输入 : 椭圆拟合得到的两个系数矩阵`abcdef_Low`和`abcdef_High`
 - 输出 :
@@ -23,5 +23,9 @@
   load('30_2.mat');
   ```
 ##### 假设主点处在相片中心且fx=fy求内参
+- 输出 : 三个约束分别得到f，求均值
 - Usage
 直接运行`calibration_with_principalpoint.m`,
+##### 相机内参误差对比
+- 输入 : 将求得的f代入`verify_fixed_entities.m`的`fx`,`fy`
+- 输出 : 误差值
