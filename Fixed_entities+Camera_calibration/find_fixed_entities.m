@@ -66,6 +66,15 @@ plot(x,y,'r');
 legend('L 12')
 hold on
 
+figure(1);
+plot(x,y,'r');
+legend('L 12')
+hold on
+
+
+
+
+
 b=-1/L_34(2); 
 k=-1*L_34(1)/L_34(2);
 x=0:0.1:img_width;
@@ -74,6 +83,11 @@ plot(x,y,'b');
 title('L-inftys');
 set(gca,'ydir','reverse');
 hold on
+
+figure(1);
+plot(x,y,'b');
+hold on
+
 
 L_13 = cross(x1_I, x2_I);
 L_24 = cross(x1_J, x2_J);
