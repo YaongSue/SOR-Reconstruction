@@ -2,8 +2,8 @@ clear
 clc;
 
 
-load('30_1.mat');
-load('30_2.mat');
+load('20_1.mat');
+load('20_2.mat');
 
 img_width = 1080;
 img_height = 720;
@@ -71,10 +71,7 @@ plot(x,y,'r');
 legend('L 12')
 hold on
 
-
-
-
-
+figure(2);
 b=-1/L_34(2); 
 k=-1*L_34(1)/L_34(2);
 x=0:0.1:img_width;

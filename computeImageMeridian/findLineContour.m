@@ -1,9 +1,24 @@
 function contour_line = findLineContour(image)
-RGB = imread(image);%Read the image
+
+%% load data
+width = 1080;
+height = 720;
+load('../Data/f20_1080_720/20_1.mat');
+
+abcdef_High=abcdef_High/abcdef_High(6);
+a=abcdef_High(1);
+b=abcdef_High(2);
+c=abcdef_High(3);
+d=abcdef_High(4);
+e=abcdef_High(5);
+f=abcdef_High(6);
+
+%% 找直线
+RGB = imread(image) ;%Read the image
 Highlight=RGB;
-I=rgb2gray(RGB); %transform the image to gray
-[x,y]=size(I);   %get the size of the picture
-BW=edge(I);      %get the edge of the picture
+I=rgb2gray(RGB);     %transform the image to gray
+[x,y]=size(I);       %get the size of the picture
+BW=edge(I);          %get the edge of the picture
 
 
 rho_max=floor(sqrt(x^2+y^2))+1; %由原图数组坐标算出ρ最大值，并取整数部分加1
@@ -12,7 +27,6 @@ accarray=zeros(rho_max,180); %定义ρ，θ坐标系的数组，初值为0。
 %θ的最大值，180度
 
 Theta=[0:pi/180:pi]; %定义θ数组，确定θ取值范围
-
 for n=1:x,
     for m=1:y
         if BW(n,m)==1
@@ -29,11 +43,9 @@ for n=1:x,
 end
 
 
-
 %=======利用hough变换提取直线======%
 %寻找100个像素以上的直线在hough变换后形成的点
 %寻找一个最长的直线上的点
-
 K=3; %存储数组计数器
 min_length = 100;
 while (K>=3)
@@ -82,17 +94,38 @@ for n=1:x,
     end
 end
 
-
+%% 画椭圆以及圆锥的轮廓线
 % Y = p(1)X + p(2)
 p = polyfit(Y,X,1);
-contour_line = [p(1), -1, p(2)]' /p(2)
+contour_line = [p(1), -1, p(2)]'/p(2);
 save contour_line contour_line
 figure(1);
-plot(Y,X,'o',X,polyval(p,X));
+b_con=-1*contour_line(3)/contour_line(2); 
+k_con=-1*contour_line(1)/contour_line(2);
+x=0:0.1:1080;
+y = k_con*x+b_con;
+plot(x,y,'b');
+hold on
+plot(Y,X,'o');
 set(gca,'ydir','reverse');
 axis equal;
-axis([0 y 0 x]);
+axis([0 1080 0 720]);
+hold on
+
+figure(1);
+syms x;
+syms y;
+z1=a*y^2+b*x*y+c*x^2+d*y+e*x+f;
+h1=ezplot(z1,[0,width,0,height]);
+set(h1,'Color','k');
+hold on
+
+% figure(1);
+% plot(Y,X,'o',X,polyval(p,X));
+% set(gca,'ydir','reverse');
+% axis equal;
+% axis([0 y 0 x]);
 
 figure(2),imshow(Highlight);
-title('高亮后的图');
-%imwrite(Highlight,'高亮后的图.jpg','jpg');
+title('高亮图');
+%imwrite(Highlight,'高亮图.jpg','jpg');
