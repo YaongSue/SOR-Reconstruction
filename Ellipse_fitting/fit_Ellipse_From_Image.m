@@ -52,8 +52,12 @@ axis([0 height 0 width]);
 
 
 
-zuobiao(:,1)=x';
-zuobiao(:,2)=y';
+% zuobiao(:,1)=x';
+% zuobiao(:,2)=y';
+
+zuobiao(:,1)=y';
+zuobiao(:,2)=x';
+
 %zuobiao(:,3)=1 ;
 %save('corr_homo.mat','zuobiao');
 

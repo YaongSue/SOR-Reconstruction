@@ -3,7 +3,7 @@ function contour_line = findLineContour(image)
 %% load data
 width = 1080;
 height = 720;
-load('../Data/f20_1080_720/20_1.mat');
+load('../Data/f25_1080_720/25_1.mat');
 
 abcdef_High=abcdef_High/abcdef_High(6);
 a=abcdef_High(1);
@@ -12,6 +12,14 @@ c=abcdef_High(3);
 d=abcdef_High(4);
 e=abcdef_High(5);
 f=abcdef_High(6);
+
+figure(1);
+syms x;
+syms y;
+z1=a*y^2+b*x*y+c*x^2+d*y+e*x+f;
+h1=ezplot(z1,[0,width,0,height]);
+set(h1,'Color','r');
+hold on
 
 %% 找直线
 RGB = imread(image) ;%Read the image
@@ -53,10 +61,12 @@ while (K>=3)
     min_length =min_length+1;
     for rho_n=1:rho_max %在hough变换后的数组中搜索
         for theta_m=1:180
-            if accarray(rho_n,theta_m)>=min_length%设定直线的最小值。
-            case_accarray_n(K)=rho_n; %存储搜索出的数组下标
-            case_accarray_m(K)=theta_m;
-            K=K+1;
+            if accarray(rho_n,theta_m) >= min_length      %选择一条最长的
+            %if (accarray(rho_n,theta_m) >= 40) && (accarray(rho_n,theta_m) <= 400) %选择长度范围在此之间的直线。
+                %accarray(rho_n,theta_m)
+                case_accarray_n(K)=rho_n; %存储搜索出的数组下标
+                case_accarray_m(K)=theta_m;
+                K=K+1;
             end
         end
     end
@@ -94,7 +104,7 @@ for n=1:x,
     end
 end
 
-%% 画椭圆以及圆锥的轮廓线
+%% 画圆锥的轮廓线
 % Y = p(1)X + p(2)
 p = polyfit(Y,X,1);
 contour_line = [p(1), -1, p(2)]'/p(2);
@@ -106,19 +116,15 @@ x=0:0.1:1080;
 y = k_con*x+b_con;
 plot(x,y,'b');
 hold on
+
+contour_points=[Y;X]';
+save contour_points contour_points;
 plot(Y,X,'o');
 set(gca,'ydir','reverse');
 axis equal;
 axis([0 1080 0 720]);
 hold on
 
-figure(1);
-syms x;
-syms y;
-z1=a*y^2+b*x*y+c*x^2+d*y+e*x+f;
-h1=ezplot(z1,[0,width,0,height]);
-set(h1,'Color','k');
-hold on
 
 % figure(1);
 % plot(Y,X,'o',X,polyval(p,X));
@@ -129,3 +135,12 @@ hold on
 figure(2),imshow(Highlight);
 title('高亮图');
 %imwrite(Highlight,'高亮图.jpg','jpg');
+
+
+
+
+
+
+
+
+

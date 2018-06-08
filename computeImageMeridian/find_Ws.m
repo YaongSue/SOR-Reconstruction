@@ -5,9 +5,10 @@ height = 720;
 
 %% load data
 load('contour_line.mat');
-load('../Data/f20_1080_720/20_1.mat');
-load('../Data/f20_1080_720/L12_infty.mat');
-load('../Data/f20_1080_720/L34_infty.mat');
+load('../Data/f25_1080_720/25_1_inv.mat');
+load('../Data/f25_1080_720/25_2_inv.mat');
+load('../Data/f25_1080_720/L12_infty.mat');
+load('../Data/f25_1080_720/L34_infty.mat');
 
 abcdef_High=abcdef_High/abcdef_High(6);
 a=abcdef_High(1);
@@ -17,14 +18,25 @@ d=abcdef_High(4);
 e=abcdef_High(5);
 f=abcdef_High(6);
 
+abcdef_Low=abcdef_Low/abcdef_Low(6);
+a_=abcdef_Low(1);
+b_=abcdef_Low(2);
+c_=abcdef_Low(3);
+d_=abcdef_Low(4);
+e_=abcdef_Low(5);
+f_=abcdef_Low(6);
+
 %% 画椭圆
+syms x y;
 figure(1);
-syms x;
-syms y;
-z1=a*y^2+b*x*y+c*x^2+d*y+e*x+f;
+z1=a*x^2+b*x*y+c*y^2+d*x+e*y+f;
+z2=a_*x^2+b_*x*y+c_*y^2+d_*x+e_*y+f_;
 h1=ezplot(z1,[0,width,0,height]);
 set(h1,'Color','k');
 hold on;
+h2=ezplot(z2,[0,width,0,height]);
+set(h2,'Color','k');
+
 
 %% 画无穷线
 b_v1=-1*L12_infty(3)/L12_infty(2); 
@@ -56,165 +68,98 @@ mu_infty=mu_infty/mu_infty(3);
 plot(mu_infty(1), mu_infty(2), '*r');
 hold on
 
-
-%% 过椭圆外一点求椭圆切线,并作图
+%% 过椭圆外一点计算椭圆切线, 配极约束法
+% 求椭圆外一点的极线
 ellipse=[a,b/2,d/2; b/2,c,e/2;d/2,e/2,f];
 mu_line=ellipse*mu_infty;
-
-syms x;
-syms y;
-digits(10);
-z1=a*y^2+b*x*y+c*x^2+d*y+e*x+f;
-z2=mu_line(1)*y+mu_line(2)*x+mu_line(3);
-%z2=mu_line(1)*y+mu_line(2)*x+mu_line(3);
-result=solve(z1,z2);
-xx=result.x;
-S_vpa_x = vpa(xx);
-yy=result.y;
-S_vpa_y = vpa(yy);
-xxx=double(S_vpa_x);
-yyy=double(S_vpa_y);
-xk=[xxx,yyy];
-x1=[xk(1,:),1]';
-x2=[xk(2,:),1]';
-
-plot(x1(1),x1(2),'ro');
-plot(x2(1),x2(2),'ro');
-
-k_tangent_1=(mu_infty(2) - x1(2))/(mu_infty(1)-x1(1));
-k_tangent_2=(mu_infty(2) - x2(2))/(mu_infty(1)-x2(1));
+k_pole_polar=-mu_line(1)/mu_line(2);
+b_pole_polar=-mu_line(3)/mu_line(2); 
 x=0:0.1:width;
-y_tangent_line_1 = k_tangent_1*(x-mu_infty(1))+mu_infty(2);
-y_tangent_line_2 = k_tangent_2*(x-mu_infty(1))+mu_infty(2);
-plot(x,	y_tangent_line_1 ,'c');
-plot(x,	y_tangent_line_2 ,'m');
-hold on;
+y = k_pole_polar*x+b_pole_polar;
+plot(x,y,'c');
+hold on
 
-% line_mu2ellipse_1_x = [mu_infty(1), x1(1)]';
-% line_mu2ellipse_1_y = [mu_infty(2), x1(2)]';
-% line(line_mu2ellipse_1_x, line_mu2ellipse_1_y);
+% 求椭圆与极线的交,即切点
+syms x y
+s=solve(a*x^2+b*x*y+c*y^2+d*x+e*y+f==0,mu_line(1)*x+mu_line(2)*y+mu_line(3)==0,x,y);
+X=double(s.x);
+Y=double(s.y);
+tangent_p1 = [X(1),Y(1), 1]';
+tangent_p2 = [X(2),Y(2), 1]';
+scatter(X,Y,'ro');
+save tangent_p1 tangent_p1;
+save tangent_p2 tangent_p2;
+
+% 画切线
+plot([mu_infty(1), tangent_p1(1)]',[mu_infty(2), tangent_p1(2)]','--r');
+hold on
+plot([mu_infty(1), tangent_p2(1)]',[mu_infty(2), tangent_p2(2)]','--m');
+hold on
+
+%% 过椭圆外一点计算椭圆切线, 求椭圆参数方程法
+% % 修改脚本最后的legend以配合显示
+% ellipse=[a,b/2,d/2; b/2,c,e/2;d/2,e/2,f];
+% 
+% % 与x轴夹角
+% theta = 0.5*atan(b/(c-a));
+% % 中心
+% x_c = (b*e-2*c*d)/(4*a*c-b^2);
+% y_c = (b*d-2*a*e)/(4*a*c-b^2);
+% 
+% plot(x_c,y_c,'*');
 % hold on
 % 
-% line_mu2ellipse_2_x = [mu_infty(1), x2(1)]';
-% line_mu2ellipse_2_y = [mu_infty(2), x2(2)]';
-% line(line_mu2ellipse_2_x,line_mu2ellipse_2_y);
-% hold on
-
-%% 显示调整
-set(gca,'ydir','reverse');
-axis equal;
-axis([0 width 0 height]);
-legend('ellipse High' , 'L 12', 'L 34','contour line', 'mu infty', '切点', '切点',  '切线1', '切线2');
-
-
-% k_pole_polar=-mu_line(1)/mu_line(2);
-% b_pole_polar=-mu_line(3)/mu_line(2); 
-% x=0:0.1:width;
-% y = k_pole_polar*x+b_pole_polar;
-% plot(x,y,'c');
-% hold on
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% theta = 0.5*atan(b/(a-c));
-% x_c = (b*e-2*c*d)/(4*a*c-b*2);
-% y_c = (b*d-2*a*e)/(4*a*c-b*2);
-% plot(x_c,y_c,'*')
 % q = 64*(f*(4*a*c-b*b)-a*e*e+b*d*e-c*d*d)/((4*a*c-b*b)^2);
-% s = 1/4*sqrt(abs(q)*sqrt(b*b-(a-c)^2));
+% s = 1/4*sqrt(abs(q)*sqrt(b*b+(a-c)^2));
+% % 长短半轴
 % r_max = 1/8*sqrt(2*abs(q)*sqrt(b*b+(a-c)^2)-2*q*(a+c));
 % r_min = sqrt(r_max^2-s^2);
-% [slope, intercept] = tangentEllipse(mu_infty(1), mu_infty(2), x_c, y_c, r_max, r_min, theta);
 % 
+% [slope, intercept] = tangentEllipse(mu_infty(1), mu_infty(2), x_c, y_c, r_max, r_min, theta);
 % k_tangent1=slope;
 % b_tangent1=intercept; 
 % x=0:0.1:width;
 % y = k_tangent1*x+b_tangent1;
 % plot(x,y,'r');
 
+%% 轮廓线上的点
+% 求过上椭圆切点，与下椭圆相切的直线的切点
+ellipse_=[a_,b_/2,d_/2; b_/2,c_,e_/2;d_/2,e_/2,f_];
+tangent_p1_line_=ellipse_*tangent_p1;
+syms x y
+s=solve(a_*x^2+b_*x*y+c_*y^2+d_*x+e_*y+f_==0,tangent_p1_line_(1)*x+tangent_p1_line_(2)*y+tangent_p1_line_(3)==0,x,y);
+X_=double(s.x);
+Y_=double(s.y);
+tangent_p1_ = [X_(1),Y_(1), 1]';
+tangent_p2_ = [X_(2),Y_(2), 1]';
+plot(tangent_p1_(1),tangent_p1_(2),'ro');
+plot(tangent_p2_(1),tangent_p2_(2),'ro');
+% 求轮廓线上的若干采样点
+k = (tangent_p1(2) -tangent_p1_(2))/(tangent_p1(1) -tangent_p1_(1));
+if (tangent_p1(1) <= tangent_p1_(1))
+    contour_points_x = tangent_p1(1):1:tangent_p1_(1);
+else
+    contour_points_x = tangent_p1_(1):1:tangent_p1(1);
+end
+contour_points_y = k*(contour_points_x-tangent_p1_(1))+tangent_p1_(2);
+scatter(contour_points_x,contour_points_y,'*');
+contour_points_x = [contour_points_x tangent_p1_(1)];
+contour_points_y = [contour_points_y tangent_p1_(2)];
+contour_points_xy = [contour_points_x; contour_points_y];
+save contour_points_xy contour_points_xy;
 
-% syms k
-% result=solve('(b*mu_infty(2) + d - b*mu_infty(1)*k + e*k + 2*k*c*(mu_infty(2)-k*mu_infty(1)))^2 - 4*(a+b*k+c*k^2) * (f+e*mu_infty(2)-e*mu_infty(1)*k+c*(mu_infty(2)-k*mu_infty(1))^2)=0','k');
-% result=eval(result)
-% 
-% k=result(2); 
-% x=0:0.1:width;
-% y = k*(x-mu_infty(1)) + mu_infty(2);
-% plot(x,y,'c');
-
-
-
-% tt=vpa(result)
-% mm = double(tt)
-%xx = double(result)
-
-%k=solve('(abcdef_High(2)*mu_infty(2)+abcdef_High(4)-abcdef_High(2)*mu_infty(1)*k+abcdef_High(5)*k+2*k(mu_infty(2)-k*mu_infty(1)))^2-4*(a+abcdef_High(2)*k+k^2)*(abcdef_High(6)+abcdef_High(5)*mu_infty(2)-abcdef_High(5)*mu_infty(1)*k+(mu_infty(2)-k*mu_infty(1))^2)=0','k');
-
-% %%%%%%%%%%需要判断要哪个k即k的取值
-% syms x y
-% s=solve('y=k*(x-mu_infty(1))+mu_infty(2)','a*x^2 + abcdef_High(2)*x*y + abcdef_High(3)*y^2 + abcdef_High(4)*x + abcdef_High(5)*y + abcdef_High(6) = 0');
-% s.x
-% s.y
-
-% m=double(s.x)
-% n=double(s.y)
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%过椭圆外一点求切线%%%%%%%%%%%%%%%%%%
-% ellipse = [a,   b/2, d/2;  
-%            b/2, c,   e/2;  
-%            d/2, e/2, f];
-% 
-% ellipse = ellipse/ellipse(3,3);  
-% plot(300, 10, '*');
-% mu_line=[300 10 1]*ellipse;
+%% 显示调整
+set(gca,'ydir','reverse');
+axis equal;
+axis([0 width -height height]);
+% 配极约束法
+legend('ellipse High', 'ellipse Low', 'L 12', 'L 34','contour line', 'mu infty', '极线', '切点', '切线1','切线2', '切点', '切点','采样点');
+% 参数法
+%legend('ellipse High' , 'L 12', 'L 34','contour line', 'mu infty', '椭圆中心', '切线');
 
 
 
-% line_mu2ellipse_1_x = [mu_infty(1), x1(1)]';
-% line_mu2ellipse_1_y = [mu_infty(2), x1(2)]';
-% plot(line_mu2ellipse_1_x, line_mu2ellipse_1_y, 'c');
-% 
-% line_mu2ellipse_2_x = [mu_infty(1), x2(1)]';
-% line_mu2ellipse_2_y = [mu_infty(2), x2(2)]';
-% plot(line_mu2ellipse_2_x, line_mu2ellipse_2_y, 'm');
 
-
-
-%mu_line=ellipse*mu_infty;
-
-
-
-% %%极线
-% %mu_line=mu_infty'*ellipse;
-% mu_line=ellipse*mu_infty;
-% mu_line=mu_line/mu_line(3);
-% 
-
-% k=-mu_line(1)/mu_line(2);
-% b=-mu_line(3)/mu_line(2); 
-% x=0:0.1:width;
-% y = k*x+b;
-% plot(x,y,'c');
-
-%%极点
-% syms x y
-% s=solve(a*x^2+abcdef_High(2)*x*y+abcdef_High(3)*y^2+ ...
-%     abcdef_High(4)*x+abcdef_High(5)*y+abcdef_High(6)==0, ...
-%     mu_line(1)*x+mu_line(2)*y+mu_line(3)==0,x,y);
-% X=double(s.x)
-% Y=double(s.y)
-% x1 = [X(1), Y(1)]
-% x2 = [X(2), Y(2)]
-
-% line_mu2ellipse_1_x = [mu_infty(1), x1(1)]';
-% line_mu2ellipse_1_y = [mu_infty(2), x1(2)]';
-% plot(line_mu2ellipse_1_x, line_mu2ellipse_1_y, 'c');
-% 
-% line_mu2ellipse_2_x = [mu_infty(1), x2(1)]';
-% line_mu2ellipse_2_y = [mu_infty(2), x2(2)]';
-% plot(line_mu2ellipse_2_x, line_mu2ellipse_2_y, 'm');
 
 
 

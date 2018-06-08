@@ -3,14 +3,17 @@ clear;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%ground truth%%%%%%%%%%%%%%
-fx = 700;
-fy = 700;
+load('f.mat')
+fx = f;
+fy = f;
 cx = 540;
 cy = 360;
 k_groundtruth = [fx,     0,     cx;
                  0,      fy,    cy;
                  0,      0,     1  ];
 w_inverse_groundtruth = k_groundtruth*k_groundtruth';
+w_chol = chol(w_inverse_groundtruth);
+w_chol= w_chol/w_chol(3,3)
 w_groundtruth = w_inverse_groundtruth^-1
 
 w_groundtruth_2 = [1/(fx^2),        0,               -1*cx/(fx^2);
