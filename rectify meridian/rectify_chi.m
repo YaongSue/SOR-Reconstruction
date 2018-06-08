@@ -133,6 +133,35 @@ y = k*x+b;
 plot(x,y, 'r');
 hold on
 
+%% 距离
+b=-1/l_z(2); 
+k=-1*l_z(1)/l_z(2);
+Q1 = [0,b]';
+Q2 = [200,k*200+b]';
+intersections = [];
+for index=1:length(contour_points_rectified)
+    syms x y
+    s=solve(k*x+b==y,-1/k*x+1/k*contour_points_rectified(index,1)+contour_points_rectified(index,2)==y,x,y);
+    X=double(s.x);
+    Y=double(s.y);
+    intersections(index,1)= X;
+    intersections(index,2)= Y;
+    r(index) = real(sqrt((X-contour_points_rectified(index,1))^2 + (Y-contour_points_rectified(index,2))^2));
+    if(index==1)
+        h_increase(index) =  0;
+    else
+        h_increase(index) = sqrt((X-intersections(index-1,1))^2 + (Y-intersections(index-1,2))^2);
+    end
+end
+scatter(intersections(:,1),intersections(:,2),'b*');
+scatter(contour_points_rectified(:,1),contour_points_rectified(:,2),'b*');
+save r r
+save h_increase h_increase
+ratio = r(1)/r(end);
+
+%% 显示旋转体
+
+
 %% 显示调整
 set(gca,'ydir','reverse');
 axis equal;
