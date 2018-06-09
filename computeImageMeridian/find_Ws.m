@@ -1,10 +1,11 @@
-clc
+%clc
 
 width = 1080;
 height = 720;
 
 %% load data
-load('contour_line.mat');
+%load('contour_line.mat');
+load('l_contour.mat');
 load('../Data/f25_1080_720/25_1_inv.mat');
 load('../Data/f25_1080_720/25_2_inv.mat');
 load('../Data/f25_1080_720/L12_infty.mat');
@@ -54,15 +55,18 @@ plot(x,y,'g');
 hold on;
 
 %% 画轮廓线-椎体
-b_con=-1*contour_line(3)/contour_line(2); 
-k_con=-1*contour_line(1)/contour_line(2);
+% b_con=-1*contour_line(3)/contour_line(2); 
+% k_con=-1*contour_line(1)/contour_line(2);
+b_con=-1*l_contour(3)/l_contour(2); 
+k_con=-1*l_contour(1)/l_contour(2);
 x=0:0.1:width;
 y = k_con*x+b_con;
 plot(x,y,'b');
 hold on
 
 %% 画mu无穷
-mu_infty=cross(L12_infty, contour_line);
+%mu_infty=cross(L12_infty, contour_line);
+mu_infty=cross(L12_infty, l_contour);
 %mu_infty = cross(L34_infty, contour_line);
 mu_infty=mu_infty/mu_infty(3);
 plot(mu_infty(1), mu_infty(2), '*r');
@@ -132,6 +136,9 @@ X_=double(s.x);
 Y_=double(s.y);
 tangent_p1_ = [X_(1),Y_(1), 1]';
 tangent_p2_ = [X_(2),Y_(2), 1]';
+tangent_contour_line = cross(tangent_p1_,tangent_p1);
+tangent_contour_line = tangent_contour_line/tangent_contour_line(3);
+
 plot(tangent_p1_(1),tangent_p1_(2),'ro');
 plot(tangent_p2_(1),tangent_p2_(2),'ro');
 % 求轮廓线上的若干采样点

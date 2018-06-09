@@ -34,3 +34,4 @@ f3 = -bs/(-1*B-bs*A*cx-cy*(B*bs-1)+bs*cx^2+bs*cy^2);
 f3 =1/f3;
 f3 =f3^0.5
 f =real(f1+f2+f3)/3
+save f f

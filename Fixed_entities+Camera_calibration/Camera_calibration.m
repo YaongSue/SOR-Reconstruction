@@ -32,6 +32,7 @@ C=[  a1^2+b1^2, 2*a1,   2*b1,     1;
 save C C;
 [U S V] = svd(C)
 w = [V(1,4), 0, V(2,4); 0, V(1,4), V(3,4); V(2,4), V(3,4), V(4,4)];
+
 w_inverse = w^-1;
 w_inverse = w_inverse/w_inverse(3,3)
 % w_inverse_real = real(w_inverse)
@@ -43,7 +44,7 @@ w_inverse = w_inverse/w_inverse(3,3)
 % save k k
 % save f f
 
-
+save w w 
 
 %% 求解绝对圆锥曲线和相机焦距
 % C=[  a1^2+b1^2, 2*a1,   2*b1;

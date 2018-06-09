@@ -9,6 +9,7 @@ load('25_2_inv.mat');
 load('L12_infty.mat');
 load('L34_infty.mat');
 load('ls.mat');
+load('w_groundtruth.mat');
 load('w.mat');
 load('tangent_p1.mat')
 load('tangent_p2.mat')
@@ -51,7 +52,7 @@ hold on
 
 %% l_infty
 l_infty = L12_infty;
-% l_infty = L34_infty;
+%l_infty = L34_infty;
 b_l_infty=-1*l_infty(3)/l_infty(2); 
 k_l_infty=-1*l_infty(1)/l_infty(2);
 x=0:0.1:width;
@@ -61,12 +62,17 @@ hold on
 
 
 %% m无穷
+%omega=w_groundtruth/w_groundtruth(3,3);
 omega=w/w(3,3);
 % x 无穷
-x_infty = cross(cross(x_chi,ellipse\l_infty),l_infty);
+ppp = (ellipse^-1)*l_infty;
+ppp = ppp/ppp(3);
+plot(ppp(1),ppp(2),'ob')
+
+x_infty = cross(cross(x_chi,(ellipse^-1)*l_infty),l_infty);
 x_infty = x_infty/x_infty(3)
 %x_infty = cross(cross(x_chi,inv(ellipse)*l_infty),l_infty);
-vt_infty = omega\l_infty;
+vt_infty = (omega^-1)*l_infty;
 vt_infty = vt_infty/vt_infty(3)
 m_infty = cross(x_infty,vt_infty);
 m_infty = m_infty/m_infty(3)
@@ -97,25 +103,33 @@ intersection_p2 = [X(2),Y(2), 1]'
 intersection_p1 = intersection_p1/intersection_p1(2);
 intersection_p2 = intersection_p2/intersection_p2(2);
 
-alpha = real(intersection_p1(1));
-beta = abs(imag(intersection_p1(1)));
+alpha = real(intersection_p1(1))
+beta = abs(imag(intersection_p1(1)))
+
+% alpha = (real(intersection_p1(3))+m_infty(2))/(-1*m_infty(1))
+% beta = imag(intersection_p1(3))/m_infty(1)
 
 %% Mr Mr^-T
-Mr = [1.0/beta,   -alpha*(1/beta), 0;
-      0,          1,               0;
-      m_infty(1), m_infty(2),      1];
+Mr = [1.0/beta,   -alpha*(1.0/beta), 0;
+      0,          1,                 0;
+      m_infty(1), m_infty(2),        1]
   
 Mr_1_T = (inv(Mr))';
 
 %% rectify
 % 点修正
-contour_points_xy = contour_points_xy';
-tmp = ones(length(contour_points_xy),1);
-contour_points_xy = [contour_points_xy tmp];
-contour_points_rectified = contour_points_xy*Mr; 
+%contour_points_xy = contour_points_xy';
+tmp = ones(1,length(contour_points_xy));
+contour_points_xy = [contour_points_xy; tmp];
+contour_points_rectified = Mr*contour_points_xy; 
+for index=1:length(contour_points_rectified)
+    contour_points_rectified(1,index) = contour_points_rectified(1,index)/contour_points_rectified(3,index);
+    contour_points_rectified(2,index) = contour_points_rectified(2,index)/contour_points_rectified(3,index);
+    contour_points_rectified(3,index) = contour_points_rectified(3,index)/contour_points_rectified(3,index);
+end
 % 绘图 contour_points_xy && contour_points_rectified
-plot(contour_points_xy(:,1),contour_points_xy(:,2),'--b');
-plot(contour_points_rectified(:,1),contour_points_rectified(:,2),'r');
+plot(contour_points_xy(1,:),contour_points_xy(2,:),'--b');
+plot(contour_points_rectified(1,:),contour_points_rectified(2,:),'r');
 % 对称轴修正
 l_z = Mr_1_T*ls;
 % 绘图 ls lz
@@ -138,28 +152,27 @@ b=-1/l_z(2);
 k=-1*l_z(1)/l_z(2);
 Q1 = [0,b]';
 Q2 = [200,k*200+b]';
-intersections = [];
+
 for index=1:length(contour_points_rectified)
     syms x y
-    s=solve(k*x+b==y,-1/k*x+1/k*contour_points_rectified(index,1)+contour_points_rectified(index,2)==y,x,y);
+    s=solve(k*x+b==y,-1/k*x+1/k*contour_points_rectified(1,index)+contour_points_rectified(2,index)==y,x,y);
     X=double(s.x);
     Y=double(s.y);
-    intersections(index,1)= X;
-    intersections(index,2)= Y;
-    r(index) = real(sqrt((X-contour_points_rectified(index,1))^2 + (Y-contour_points_rectified(index,2))^2));
+    intersections(1,index)= X;
+    intersections(2,index)= Y;
+    r(index) = real(sqrt((X-contour_points_rectified(1,index))^2 + (Y-contour_points_rectified(2,index))^2));
     if(index==1)
         h_increase(index) =  0;
     else
-        h_increase(index) = sqrt((X-intersections(index-1,1))^2 + (Y-intersections(index-1,2))^2);
+        h_increase(index) = sqrt((X-intersections(1,index-1))^2 + (Y-intersections(2,index-1))^2);
     end
 end
-scatter(intersections(:,1),intersections(:,2),'b*');
-scatter(contour_points_rectified(:,1),contour_points_rectified(:,2),'b*');
+
+scatter(intersections(1,:),intersections(2,:),'b*');
+scatter(contour_points_rectified(1,:),contour_points_rectified(2,:),'b*');
+
 save r r
 save h_increase h_increase
-ratio = r(1)/r(end);
-
-%% 显示旋转体
 
 
 %% 显示调整
@@ -168,3 +181,32 @@ axis equal;
 axis([0 width 0 height]);
 legend('reference ellipse','ellipse 2', 'x chi','L infty', 'm infty', 'imaged meridian', 'rectified imaged meridian', 'ls', 'rectified ls');
 
+%% 结果显示
+ratio_r = real(r(1)/r(end));
+sum_h = sum(h_increase);
+h_ratio_large = real(sum_h / r(end));
+h_ratio_small = real(sum_h / r(1));
+
+y= real(h_increase);
+x = real(r);
+% figure(3);
+% plot(y, x);
+
+[x_data,y_data,z_data]=cylinder(x,100);
+xxx = x_data(:);
+yyy = y_data(:);
+zzz = z_data(:);
+figure(3);
+mesh(x_data,y_data,z_data);
+
+r1_r2=['半径之比：',num2str(ratio_r)];
+height_r1=['高度比最大半径：',num2str(h_ratio_large)];
+height_r2=['高度比最小半径：',num2str(h_ratio_small)];
+
+% x1=xlabel('X轴');        
+% x2=ylabel('Y轴');        
+% x3=zlabel('Z轴');          
+
+text(150,-50,0.9,r1_r2,'FontSize',10);
+text(150,-50,0.8,height_r1);
+text(150,-50,0.7,height_r2);

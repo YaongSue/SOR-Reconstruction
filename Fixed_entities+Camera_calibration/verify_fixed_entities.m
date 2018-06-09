@@ -79,11 +79,7 @@ disp(w_Vinfty);
 fprintf('ls = \n');
 disp(ls);
 
-
-
-
-
-
+save w_groundtruth w_groundtruth
 
 
 
