@@ -4,8 +4,8 @@ clc;
 
 
 %% load data 
-load('25_1_inv.mat');
-load('25_2_inv.mat');
+load('40_1.mat');
+load('40_2.mat');
 
 img_width = 1080;
 img_height = 720;

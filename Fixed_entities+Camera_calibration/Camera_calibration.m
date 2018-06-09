@@ -29,7 +29,7 @@ C=[  a1^2+b1^2, 2*a1,   2*b1,     1;
      A,         1-as*A, -as*B,    -as;
      as*B-bs*A, -bs,    as,       0];
 
-save C C;
+%save C C;
 [U S V] = svd(C)
 w = [V(1,4), 0, V(2,4); 0, V(1,4), V(3,4); V(2,4), V(3,4), V(4,4)];
 

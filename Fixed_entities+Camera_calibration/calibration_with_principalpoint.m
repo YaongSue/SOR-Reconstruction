@@ -1,7 +1,7 @@
 clear;
 
-cx = 540;
-cy = 360;
+cx = 531.860786176345;
+cy = 384.513187498083;
 
 load('v_infty.mat');
 load('ls.mat');

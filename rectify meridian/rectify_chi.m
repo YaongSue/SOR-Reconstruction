@@ -4,8 +4,8 @@ clc;
 width = 1080;
 height = 720;
 
-load('25_1_inv.mat');
-load('25_2_inv.mat');
+load('25_1.mat');
+load('25_2.mat');
 load('L12_infty.mat');
 load('L34_infty.mat');
 load('ls.mat');
@@ -41,7 +41,7 @@ h1=ezplot(z1,[0,width,0,height]);
 set(h1,'Color','k');
 hold on;
 h2=ezplot(z2,[0,width,0,height]);
-set(h2,'Color','g');
+set(h2,'Color','y');
 hold on; 
 
 %% x_chi 切线根据情况2选一
@@ -62,13 +62,15 @@ hold on
 
 
 %% m无穷
-%omega=w_groundtruth/w_groundtruth(3,3);
-omega=w/w(3,3);
-% x 无穷
-ppp = (ellipse^-1)*l_infty;
-ppp = ppp/ppp(3);
-plot(ppp(1),ppp(2),'ob')
+omega=w_groundtruth/w_groundtruth(3,3);
+%omega=w/w(3,3);
 
+% 上椭圆中心
+% ppp = (ellipse^-1)*l_infty;
+% ppp = ppp/ppp(3);
+% plot(ppp(1),ppp(2),'ob')
+
+% x 无穷
 x_infty = cross(cross(x_chi,(ellipse^-1)*l_infty),l_infty);
 x_infty = x_infty/x_infty(3)
 %x_infty = cross(cross(x_chi,inv(ellipse)*l_infty),l_infty);
@@ -128,8 +130,8 @@ for index=1:length(contour_points_rectified)
     contour_points_rectified(3,index) = contour_points_rectified(3,index)/contour_points_rectified(3,index);
 end
 % 绘图 contour_points_xy && contour_points_rectified
-plot(contour_points_xy(1,:),contour_points_xy(2,:),'--b');
-plot(contour_points_rectified(1,:),contour_points_rectified(2,:),'r');
+plot(contour_points_xy(1,:),contour_points_xy(2,:),'--r');
+plot(contour_points_rectified(1,:),contour_points_rectified(2,:),'b');
 % 对称轴修正
 l_z = Mr_1_T*ls;
 % 绘图 ls lz
@@ -137,14 +139,14 @@ b=-1/ls(2);
 k=-1*ls(1)/ls(2);
 x=0:0.1:width;
 y = k*x+b;
-plot(x,y, '--b');
+plot(x,y,'--m');
 hold on
 
 b=-1/l_z(2); 
 k=-1*l_z(1)/l_z(2);
 x=0:0.1:width;
 y = k*x+b;
-plot(x,y, 'r');
+plot(x,y, 'm');
 hold on
 
 %% 距离
@@ -168,25 +170,31 @@ for index=1:length(contour_points_rectified)
     end
 end
 
-scatter(intersections(1,:),intersections(2,:),'b*');
-scatter(contour_points_rectified(1,:),contour_points_rectified(2,:),'b*');
+scatter(contour_points_rectified(1,:),contour_points_rectified(2,:),'co');
+scatter(intersections(1,:),intersections(2,:),'ko');
+plot([contour_points_rectified(1,10),intersections(1,10)],[contour_points_rectified(2,10),intersections(2,10)],'r');
+text((contour_points_rectified(1,10)+intersections(1,10))/2-10,(contour_points_rectified(2,10)+intersections(2,10))/2+5,'半径');
 
 save r r
 save h_increase h_increase
-
 
 %% 显示调整
 set(gca,'ydir','reverse');
 axis equal;
 axis([0 width 0 height]);
-legend('reference ellipse','ellipse 2', 'x chi','L infty', 'm infty', 'imaged meridian', 'rectified imaged meridian', 'ls', 'rectified ls');
+legend('reference ellipse','ellipse 2', 'x chi','L infty', 'm infty', 'imaged meridian', 'rectified imaged meridian', 'ls', 'rectified ls','rectified sample points','vertical points');
 
 %% 结果显示
-ratio_r = real(r(1)/r(end));
+ratio_r = real(max(r)/min(r));
 sum_h = sum(h_increase);
-h_ratio_large = real(sum_h / r(end));
-h_ratio_small = real(sum_h / r(1));
+%sum_h = sum(h_increase(1:84));
+h_ratio_large = real(sum_h / max(r));
+h_ratio_small = real(sum_h / min(r));
 
+% h_increase_ = h_increase(1:84);
+% r_ = r(1:84);
+% y= real(h_increase_);
+% x = real(r_);
 y= real(h_increase);
 x = real(r);
 % figure(3);

@@ -6,8 +6,8 @@ height = 720;
 %% load data
 %load('contour_line.mat');
 load('l_contour.mat');
-load('../Data/f25_1080_720/25_1_inv.mat');
-load('../Data/f25_1080_720/25_2_inv.mat');
+load('../Data/f25_1080_720/25_1.mat');
+load('../Data/f25_1080_720/25_2.mat');
 load('../Data/f25_1080_720/L12_infty.mat');
 load('../Data/f25_1080_720/L34_infty.mat');
 
@@ -129,31 +129,66 @@ hold on
 %% 轮廓线上的点
 % 求过上椭圆切点，与下椭圆相切的直线的切点
 ellipse_=[a_,b_/2,d_/2; b_/2,c_,e_/2;d_/2,e_/2,f_];
-tangent_p1_line_=ellipse_*tangent_p1;
+tangent_p = tangent_p1;
+%tangent_p = tangent_p2;
+tangent_p_line_ = ellipse_*tangent_p;
+
 syms x y
-s=solve(a_*x^2+b_*x*y+c_*y^2+d_*x+e_*y+f_==0,tangent_p1_line_(1)*x+tangent_p1_line_(2)*y+tangent_p1_line_(3)==0,x,y);
+s=solve(a_*x^2+b_*x*y+c_*y^2+d_*x+e_*y+f_==0,tangent_p_line_(1)*x+tangent_p_line_(2)*y+tangent_p_line_(3)==0,x,y);
 X_=double(s.x);
 Y_=double(s.y);
 tangent_p1_ = [X_(1),Y_(1), 1]';
 tangent_p2_ = [X_(2),Y_(2), 1]';
-tangent_contour_line = cross(tangent_p1_,tangent_p1);
+tangent_p_ = tangent_p1_;
+%tangent_p_ = tangent_p2_;
+
+tangent_contour_line = cross(tangent_p_,tangent_p);
 tangent_contour_line = tangent_contour_line/tangent_contour_line(3);
 
 plot(tangent_p1_(1),tangent_p1_(2),'ro');
-plot(tangent_p2_(1),tangent_p2_(2),'ro');
+plot(tangent_p_(1),tangent_p_(2),'ro');
 % 求轮廓线上的若干采样点
-k = (tangent_p1(2) -tangent_p1_(2))/(tangent_p1(1) -tangent_p1_(1));
-if (tangent_p1(1) <= tangent_p1_(1))
-    contour_points_x = tangent_p1(1):1:tangent_p1_(1);
+k = (tangent_p(2) -tangent_p_(2))/(tangent_p(1) -tangent_p_(1));
+if (tangent_p(1) <= tangent_p_(1))
+    contour_points_x = tangent_p(1):1:tangent_p_ (1);
 else
-    contour_points_x = tangent_p1_(1):1:tangent_p1(1);
+    contour_points_x = tangent_p_(1):1:tangent_p(1);
 end
-contour_points_y = k*(contour_points_x-tangent_p1_(1))+tangent_p1_(2);
+contour_points_y = k*(contour_points_x-tangent_p_(1))+tangent_p_(2);
 scatter(contour_points_x,contour_points_y,'*');
-contour_points_x = [contour_points_x tangent_p1_(1)];
-contour_points_y = [contour_points_y tangent_p1_(2)];
+contour_points_x = [contour_points_x tangent_p_(1)];
+contour_points_y = [contour_points_y tangent_p_(2)];
 contour_points_xy = [contour_points_x; contour_points_y];
 save contour_points_xy contour_points_xy;
+
+
+% ellipse_=[a_,b_/2,d_/2; b_/2,c_,e_/2;d_/2,e_/2,f_];
+% tangent_p1_line_=ellipse_*tangent_p1;
+% %tangent_p1_line_=ellipse_*tangent_p2;
+% syms x y
+% s=solve(a_*x^2+b_*x*y+c_*y^2+d_*x+e_*y+f_==0,tangent_p1_line_(1)*x+tangent_p1_line_(2)*y+tangent_p1_line_(3)==0,x,y);
+% X_=double(s.x);
+% Y_=double(s.y);
+% tangent_p1_ = [X_(1),Y_(1), 1]';
+% tangent_p2_ = [X_(2),Y_(2), 1]';
+% tangent_contour_line = cross(tangent_p1_,tangent_p1);
+% tangent_contour_line = tangent_contour_line/tangent_contour_line(3);
+% 
+% plot(tangent_p1_(1),tangent_p1_(2),'ro');
+% plot(tangent_p2_(1),tangent_p2_(2),'ro');
+% % 求轮廓线上的若干采样点
+% k = (tangent_p1(2) -tangent_p1_(2))/(tangent_p1(1) -tangent_p1_(1));
+% if (tangent_p1(1) <= tangent_p1_(1))
+%     contour_points_x = tangent_p1(1):1:tangent_p1_(1);
+% else
+%     contour_points_x = tangent_p1_(1):1:tangent_p1(1);
+% end
+% contour_points_y = k*(contour_points_x-tangent_p1_(1))+tangent_p1_(2);
+% scatter(contour_points_x,contour_points_y,'*');
+% contour_points_x = [contour_points_x tangent_p1_(1)];
+% contour_points_y = [contour_points_y tangent_p1_(2)];
+% contour_points_xy = [contour_points_x; contour_points_y];
+% save contour_points_xy contour_points_xy;
 
 %% 显示调整
 set(gca,'ydir','reverse');

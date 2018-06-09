@@ -67,7 +67,7 @@ zuobiao_new=zuobiao(randIndex,:);
 zuobiao_new_ransac=ellipseDataFilter_RANSAC(zuobiao_new);
 figure(3);
 h1 = gca;
-scatter(zuobiao_new_ransac(:,2),zuobiao_new_ransac(:,1),5,'k');
+scatter(zuobiao_new_ransac(:,1),zuobiao_new_ransac(:,2),5,'k');
 set(h1,'ydir','reverse');
 axis equal;
 axis([0 height 0 width]);
@@ -136,6 +136,8 @@ end
 figure(4);
 plot(x_error,error);
 
+error_mean = mean(error)
+error_var= var(error)
 
 %catter(x_error,error,'k');
 % 

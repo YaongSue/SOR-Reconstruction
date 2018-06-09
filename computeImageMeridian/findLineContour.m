@@ -3,7 +3,7 @@ function contour_line = findLineContour(image)
 %% load data
 width = 1080;
 height = 720;
-load('../Data/f25_1080_720/25_1.mat');
+load('../Data/f25_1080_720/25_1_inv.mat');
 
 abcdef_High=abcdef_High/abcdef_High(6);
 a=abcdef_High(1);
@@ -16,7 +16,7 @@ f=abcdef_High(6);
 figure(1);
 syms x;
 syms y;
-z1=a*y^2+b*x*y+c*x^2+d*y+e*x+f;
+z1=a*x^2+b*x*y+c*y^2+d*x+e*y+f;
 h1=ezplot(z1,[0,width,0,height]);
 set(h1,'Color','r');
 hold on
@@ -119,7 +119,7 @@ hold on
 
 contour_points=[Y;X]';
 save contour_points contour_points;
-plot(Y,X,'o');
+%plot(Y,X,'o');
 set(gca,'ydir','reverse');
 axis equal;
 axis([0 1080 0 720]);
